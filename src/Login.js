@@ -21,11 +21,6 @@ class Login extends Component {
             value: event.target.value
         });
     }
-    enterToSubmit(event) {
-        if (event.keyCode === 13) {
-            this.handleSubmit(event);
-        }
-    }
     handleSubmit(event) {
         event.preventDefault();
         if (this.state.value === "") {
@@ -36,7 +31,6 @@ class Login extends Component {
             this.setState({
                 submitted: true
             });
-            this.props.name(this.state.value);
             this.props.ready(this.state.value);
         }
     }
@@ -49,13 +43,10 @@ class Login extends Component {
     render() {
         if (!this.state.submitted) {
             return (
-                <div>
-                    <label>
-                        Name:
-                        <input type="text" value={this.state.value} onChange={this.handleChange} onKeyPress={this.enterToSubmit} />
-                    </label>
-                    <button type="button" onClick={this.handleSubmit}>Join</button>
-                </div>
+                <form onSubmit={this.handleSubmit}>
+                    <input type="text" placeholder="Nickname" value={this.state.value} onChange={this.handleChange} />
+                    <input type="submit" onClick={this.handleSubmit} value="Join" />
+                </form>
             );
         } else if (!this.state.started) {
             return (
@@ -85,6 +76,10 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     ready: (name) => {
         dispatch({
+            type: "NAME",
+            data: name
+        });
+        dispatch({
             type: "s/ready",
             data: name
         });
@@ -93,12 +88,6 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch({
             type: "s/start",
             data: "glhf"
-        });
-    },
-    name: (name) => {
-        dispatch({
-            type: "NAME",
-            data: name
         });
     }
 });

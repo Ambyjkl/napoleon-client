@@ -8,11 +8,11 @@ class App extends Component {
     render() {
         return (
             <div>
-                <h1>napoleon</h1>
+                <h1 style={{ fontFamily: "sans-serif" }}><span style={{ fontWeight: "normal" }}>♚</span> napoleon</h1>
                 {
                     this.props.gameStarted
-                    ?   <Game />
-                    :   (<div>
+                        ? <Game style={{ fontFamily: "sans-serif" }} />
+                        : (<div style={{ fontFamily: "sans-serif" }}>
                             <PlayerList />
                             <Login />
                         </div>)
@@ -22,7 +22,7 @@ class App extends Component {
     }
 }
 
-App.propTypes= {
+App.propTypes = {
     gameStarted: React.PropTypes.bool
 };
 

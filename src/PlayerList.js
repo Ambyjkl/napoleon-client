@@ -9,11 +9,15 @@ class PlayerList extends Component {
     render() {
         return (
             <div className="PlayerList">
-                <h2> Ready Players: </h2>
+                {
+                    this.props.players.length > 0 ?
+                        <h3> Ready Players: </h3>
+                        : null
+                }
                 <ul>
                     {
                         this.props.players.map((playerName) => (
-                            <li key={this.count++}>
+                            <li key={++this.count}>
                                 {playerName}
                             </li>
                         ))

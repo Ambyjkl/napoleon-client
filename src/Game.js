@@ -1,28 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import Messenger from "./Messenger";
 
 class Game extends Component {
-    // constructor(props) {
-    //     super(props);
-    //     // console.log(this.props.status.log.length);
-    // }
-    move() {
-        const data = {
-            source: this.props.name,
-            target: this.props.localState.targetPlayer,
-            card: this.props.localState.targetCard
-        };
-        this.setprops.localState({
-            targetPlayer: null,
-            targetCard: {
-                value: null,
-                suit: null
-            }
-        }, this.props.move(data));
-    }
-    render() {
-        const myTurn = this.props.status.currentPlayer === this.props.name;
-        const suitChars = {
+    constructor(props) {
+        super(props);
+        this.suitChars = {
             "s": {
                 char: "♠",
                 style: {
@@ -48,11 +31,81 @@ class Game extends Component {
                 }
             }
         };
+        this.flexStyle = {
+            container: {
+                // display: "flex"
+                display: "inline-block"
+            },
+            leftChild: {
+                // flex: 1
+                float: "left",
+                margin: "10px"
+            },
+            rightChild: {
+                float: "right",
+                margin: "10px"
+            }
+        };
+    }
+    move() {
+        const data = {
+            source: this.props.name,
+            target: this.props.localState.targetPlayer,
+            card: this.props.localState.targetCard
+        };
+        this.setprops.localState({
+            targetPlayer: null,
+            targetCard: {
+                value: null,
+                suit: null
+            }
+        }, this.props.move(data));
+    }
+
+    render() {
+        if (this.props.status.gameOver || this.props.status.lost || this.props.status.won) {
+            return (
+                <div style={{ ...this.flexStyle.container, ...this.props.style }}>
+                    <Messenger style={this.flexStyle.rightChild} />
+                    <div style={this.flexStyle.leftChild}>
+                        <p>Name: {this.props.name}</p>
+                        <p>
+                            Log:
+                        </p>
+                        <ul>
+                            {/*{
+                            this.props.status.gameLog.map((logItem) => (
+                                <li key={logCount++}>
+                                    {logItem}
+                                </li>
+                            ))
+                        }*/}
+                            <li>
+                                {this.props.status.gameLog[this.props.status.gameLog.length - 1]}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <p>
+                        {
+                            this.props.status.lost ? "You lost!"
+                                : this.props.status.won ? "You won!"
+                                    : "Error..."
+                        }
+                        {
+                            this.props.status.gameOver ? "Game over!"
+                                : null
+                        }
+                    </p>
+                </div>
+            );
+        }
+        const myTurn = this.props.status.currentPlayer === this.props.name;
         let cardsList;
         if (!this.props.status) {
             cardsList = null;
         } else {
-            let hand = new Map();
+            const hand = new Map();
             for (let {value, suit} of this.props.status.myHand) {
                 let suitArr = hand.get(value);
                 if (hand.has(value)) {
@@ -68,16 +121,23 @@ class Game extends Component {
                 <div>
                     <p>
                         My cards:
-                </p>
+                    </p>
                     {
-                        this.props.status.allAreGroups ?
-                            <p>Hidden because all your cards are groups</p>
+                        hand.size === 0 ?
+                            <p><i>Hidden</i></p>
+                            :
+                            this.props.status.allAreGroups ?
+                                <p>All your cards are now in groups of 4, so you get to see them one last time</p>
+                                : null
+                    }
+                    {
+                        hand.size === 0 ? null
                             :
                             <ul>
                                 {
                                     Array.from(hand).map(([value, suits]) => {
                                         let suitArr = suits.map((suit) => {
-                                            const suitChar = suitChars[suit];
+                                            const suitChar = this.suitChars[suit];
                                             return (
                                                 <span key={suit} style={suitChar.style}>
                                                     {suitChar.char}
@@ -133,11 +193,16 @@ class Game extends Component {
                             <button key={value} type="button" onClick={() => {
                                 this.props.setTargetCardValue(value);
                                 if (this.props.status.allAreGroups) {
-                                    this.props.move({
+                                    this.props.setTargetCardSuit("all");
+                                    const r = {
                                         name: this.props.name,
-                                        targetPlayer: this.props.localState.targetPlayer,
-                                        targetCard: this.props.localState.targetCard
-                                    });
+                                        target: this.props.localState.targetPlayer,
+                                        card: {
+                                            value
+                                        }
+                                    };
+                                    console.log("all ar groups!: ", r);
+                                    this.props.move(r);
                                 }
                             }}>{value}</button>
                         ))
@@ -149,9 +214,8 @@ class Game extends Component {
                 <div>
                     <p>Choose a suit</p>
                     {
-                        Object.keys(suitChars).map((suit) => {
-                            const suitChar = suitChars[suit];
-                            {/*console.log(suitChar, suitChar.char, suit.toString());*/ }
+                        Object.keys(this.suitChars).map((suit) => {
+                            const suitChar = this.suitChars[suit];
                             return (
                                 <button key={suit + suit} style={suitChar.style} type="button" onClick={() => {
                                     const r = {
@@ -180,30 +244,33 @@ class Game extends Component {
                 </div>
             );
         }
-        // let logCount = 0;
+        let logCount = 0;
         return (
-            <div>
-                <p>Name: {this.props.name}</p>
-                <p>
-                    {myTurn ? "Your turn" : `${this.props.status.currentPlayer}'s turn`}
-                </p>
-                <p>
-                    Log:
-                </p>
-                <ul>
-                    {/*{
-                        this.props.status.gameLog.map((logItem) => (
-                            <li key={logCount++}>
-                                {logItem}
-                            </li>
-                        ))
-                    }*/}
-                    <li>
-                        {this.props.status.gameLog[this.props.status.gameLog.length - 1]}
-                    </li>
-                </ul>
-                {cardsList}
-                {movesBox}
+            <div style={{ ...this.flexStyle.container, ...this.props.style }}>
+                <Messenger style={this.flexStyle.rightChild} />
+                <div style={this.flexStyle.leftChild}>
+                    <p>Name: {this.props.name}</p>
+                    <p>
+                        {myTurn ? "Your turn" : `${this.props.status.currentPlayer}'s turn`}
+                    </p>
+                    <p>
+                        Log:
+                    </p>
+                    <ul>
+                        {/*{
+                            this.props.status.gameLog.map((logItem) => (
+                                <li key={logCount++}>
+                                    {logItem}
+                                </li>
+                            ))
+                        }*/}
+                        <li>
+                            {this.props.status.gameLog[this.props.status.gameLog.length - 1 + logCount]}
+                        </li>
+                    </ul>
+                    {cardsList}
+                    {movesBox}
+                </div>
             </div>
         );
     }
@@ -216,13 +283,14 @@ Game.propTypes = {
     setTargetPlayer: React.PropTypes.func,
     setTargetCardSuit: React.PropTypes.func,
     setTargetCardValue: React.PropTypes.func,
-    status: React.PropTypes.object
+    status: React.PropTypes.object,
+    style: React.PropTypes.object
 };
 
 const mapStateToProps = (state) => ({
+    localState: state.localState,
     name: state.name,
-    status: state.status,
-    localState: state.localState
+    status: state.status
 });
 
 const mapDispatchToProps = (dispatch) => ({
