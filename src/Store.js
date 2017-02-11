@@ -1,25 +1,39 @@
-import { createStore, combineReducers, applyMiddleware } from "redux";
-// import thunk from "redux-thunk";
+import { createStore, applyMiddleware } from "redux";
 import createSocketIoMiddleware from "redux-socket.io";
+// import thunk from "redux-thunk";
 import io from "socket.io-client";
-import * as reducers from "./reducers";
+import rootReducer from "./reducers/index";
 
-const appReducer = combineReducers(reducers);
 const initialState = {
     gameStarted: false,
     messages: [],
     name: "",
     playerList: [],
-    status: Object,
-    log: []
+    status: {
+        allAreGroups: false,
+        currentPlayer: "",
+        gameLog: [],
+        lost: false,
+        myHand: [],
+        players: [],
+        won: false
+    },
+    localState: {
+        targetPlayer: null,
+        targetCard: {
+            value: null,
+            suit: null
+        }
+    }
 };
 
 const socket = io("localhost:1808");
 const socketIoMiddleware = createSocketIoMiddleware(socket, "s/");
 
 const store = createStore(
-    appReducer,
+    rootReducer,
     initialState,
+    // applyMiddleware(thunk),
     applyMiddleware(socketIoMiddleware)
 );
 

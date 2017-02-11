@@ -1,12 +1,12 @@
-"use strict";
-
-export const gameStarted = (state,action) => {
-    switch(action.type) {
+const gameStarted = (state = false, action) => {
+    switch (action.type) {
         case "PREPARE_GAME": {
             return true;
         }
-        default : {
+        default: {
             return state;
         }
     }
 };
+
+export default gameStarted;

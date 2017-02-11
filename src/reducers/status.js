@@ -1,6 +1,4 @@
-"use strict";
-
-export const status = (state, action) => {
+const status = (state = null, action) => {
     switch (action.type) {
         case "UPDATE_STATUS":
             return action.data;
@@ -9,11 +7,4 @@ export const status = (state, action) => {
     }
 };
 
-export const log = (state, action) => {
-    switch (action.type) {
-        case "UPDATE_LOG":
-            return action.data;
-        default:
-            return state;
-    }
-}
+export default status;

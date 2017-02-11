@@ -1,8 +1,6 @@
-"use strict";
-
-export const messages = (state, action) => {
-    switch(action.type) {
-        case "NEW_MESSAGE" :
+const messages = (state = [], action) => {
+    switch (action.type) {
+        case "NEW_MESSAGE":
             return [
                 ...state,
                 action.data
@@ -11,3 +9,5 @@ export const messages = (state, action) => {
             return state;
     }
 };
+
+export default messages;

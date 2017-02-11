@@ -3,7 +3,7 @@ module.exports = {
         "es6": true,
         "node": true
     },
-    "extends": "eslint:recommended",
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
     "parserOptions": {
         "ecmaFeatures": {
             "experimentalObjectRestSpread": true,
@@ -19,6 +19,7 @@ module.exports = {
         "react/jsx-no-undef": 2,
         "no-unused-vars": 2,
         "react/jsx-uses-vars": 1,
+        "react/jsx-uses-react": 1,
         "comma-dangle":       [ 2, "never" ],
         "no-unreachable":     1,
         // "prefer-es6-class": [2, "always"],

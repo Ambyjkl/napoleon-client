@@ -1,33 +1,36 @@
 import React, { Component } from "react";
-export default class PlayerList extends Component {
+import { connect } from "react-redux";
+
+class PlayerList extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            players: []
-        };
-    }
-    componentDidMount() {
-        this.props.socket.on("newPlayer", (playerName) => {
-            console.log(playerName);
-            this.setState({
-                players: this.state.players.concat([playerName])
-            });
-        });
+        this.count = 0;
     }
     render() {
         return (
             <div className="PlayerList">
                 <h2> Ready Players: </h2>
-                    <ul>
+                <ul>
                     {
-                        this.state.players.map((playerName) => {
-                            return (
-                                <li>{playerName}</li>
-                            );
-                        })
+                        this.props.players.map((playerName) => (
+                            <li key={this.count++}>
+                                {playerName}
+                            </li>
+                        ))
                     }
-                    </ul>
+                </ul>
             </div>
         );
     }
 }
+
+PlayerList.propTypes = {
+    players: React.PropTypes.array
+};
+
+const mapStateToProps = (state) => ({
+    players: state.playerList
+});
+
+const Wrapper = connect(mapStateToProps)(PlayerList);
+export default Wrapper;
