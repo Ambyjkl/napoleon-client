@@ -5,6 +5,21 @@ import Messenger from "./Messenger";
 class Game extends Component {
     constructor(props) {
         super(props);
+        this.values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+        this.cardStyle = {
+            alignItems: "center",
+            background: "#FFFFFA",
+            border: "1px solid black",
+            borderRadius: "5px",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.16), 0 1px 2px rgba(0,0,0,0.23)",
+            display: "inline-block",
+            padding: "0px 10px 5px",
+            textAlign: "center",
+            width: "70px"
+        };
+        this.overlapStyle = {
+            marginTop: "-50px"
+        };
         this.suitChars = {
             "s": {
                 char: "♠",
@@ -34,11 +49,11 @@ class Game extends Component {
         this.flexStyle = {
             container: {
                 // display: "flex"
-                display: "inline-block"
+                // display: "inline-block"
             },
             leftChild: {
                 // flex: 1
-                float: "left",
+                // float: "left",
                 margin: "10px"
             },
             rightChild: {
@@ -68,10 +83,9 @@ class Game extends Component {
                 <div style={{ ...this.flexStyle.container, ...this.props.style }}>
                     <Messenger style={this.flexStyle.rightChild} />
                     <div style={this.flexStyle.leftChild}>
-                        <p>Name: {this.props.name}</p>
-                        <p>
+                        <h2>
                             Log:
-                        </p>
+                        </h2>
                         <ul>
                             {/*{
                             this.props.status.gameLog.map((logItem) => (
@@ -88,13 +102,13 @@ class Game extends Component {
 
                     <p>
                         {
+                            this.props.status.gameOver ? "Game over!"
+                                : null
+                        }
+                        {
                             this.props.status.lost ? "You lost!"
                                 : this.props.status.won ? "You won!"
                                     : "Error..."
-                        }
-                        {
-                            this.props.status.gameOver ? "Game over!"
-                                : null
                         }
                     </p>
                 </div>
@@ -119,44 +133,71 @@ class Game extends Component {
             let cardCount = 0;
             cardsList = (
                 <div>
-                    <p>
+                    <h2>
                         My cards:
-                    </p>
+                    </h2>
                     {
                         hand.size === 0 ?
                             <p><i>Hidden</i></p>
                             :
                             this.props.status.allAreGroups ?
-                                <p>All your cards are now in groups of 4, so you get to see them one last time</p>
+                                <p><b>All your cards are now in groups of 4, so you get to see them one last time</b></p>
                                 : null
                     }
                     {
                         hand.size === 0 ? null
                             :
-                            <ul>
+                            <div style={{ display: "flex", alignItems: "flex-start", flexWrap: "wrap", clear: "both" }}>
+
                                 {
                                     Array.from(hand).map(([value, suits]) => {
+                                        let count = 0;
                                         let suitArr = suits.map((suit) => {
                                             const suitChar = this.suitChars[suit];
+                                            let cardStyle = { ...suitChar.style, ...this.cardStyle };
+                                            if (count !== 0) {
+                                                cardStyle = {
+                                                    ...cardStyle,
+                                                    ...this.overlapStyle
+                                                };
+                                            }
+                                            count++;
+                                            let suitStyle = {
+                                                fontSize: "60px", paddingRight: "10px", paddingTop: "15px"
+                                            };
+                                            if (count !== suits.length) {
+                                                suitStyle = {
+                                                    ...suitStyle,
+                                                    marginTop: "-25px"
+                                                };
+                                            }
                                             return (
-                                                <span key={suit} style={suitChar.style}>
-                                                    {suitChar.char}
-                                                </span>
+                                                <div key={suit} style={cardStyle}>
+                                                    <div style={{ float: "left", paddingTop: "5px", fontFamily: "serif" }}>
+                                                        {value}
+                                                    </div>
+                                                    <div style={suitStyle}>
+                                                        {suitChar.char}
+                                                    </div>
+                                                    <div style={{ float: "right", fontFamily: "serif" }}>
+                                                        {value}
+                                                    </div>
+                                                </div>
                                             );
                                         });
-                                        const valueStyle = {
-                                            color: suitArr.length === 4 ? "green" : "black"
-                                        };
                                         return (
-                                            <li key={cardCount++}>
-                                                <span style={valueStyle}>
-                                                    {value.toUpperCase()}
-                                                </span>: {suitArr}
-                                            </li>
+                                            <div key={cardCount++} style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                margin: "10px 5px",
+                                                border: suitArr.length === 4 ? "2px solid green" : null
+                                            }}>
+                                                {suitArr}
+                                            </div>
                                         );
                                     })
                                 }
-                            </ul>
+                            </div>
                     }
                 </div>
             );
@@ -184,12 +225,11 @@ class Game extends Component {
                 </div>
             );
         } else if (this.props.localState.targetCard.value === null) {
-            let values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
             movesBox = (
                 <div>
                     <p>Choose a value</p>
                     {
-                        values.map((value) => (
+                        this.values.map((value) => (
                             <button key={value} type="button" onClick={() => {
                                 this.props.setTargetCardValue(value);
                                 if (this.props.status.allAreGroups) {
@@ -249,13 +289,12 @@ class Game extends Component {
             <div style={{ ...this.flexStyle.container, ...this.props.style }}>
                 <Messenger style={this.flexStyle.rightChild} />
                 <div style={this.flexStyle.leftChild}>
-                    <p>Name: {this.props.name}</p>
-                    <p>
+                    <h2>
                         {myTurn ? "Your turn" : `${this.props.status.currentPlayer}'s turn`}
-                    </p>
-                    <p>
+                    </h2>
+                    <h2>
                         Log:
-                    </p>
+                    </h2>
                     <ul>
                         {/*{
                             this.props.status.gameLog.map((logItem) => (

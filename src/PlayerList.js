@@ -11,7 +11,7 @@ class PlayerList extends Component {
             <div className="PlayerList">
                 {
                     this.props.players.length > 0 ?
-                        <h3> Ready Players: </h3>
+                        <h2> Ready Players: </h2>
                         : null
                 }
                 <ul>

@@ -1,11 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import TextField from "material-ui/TextField";
+import RaisedButton from "material-ui/RaisedButton";
 
 class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
             value: "",
+            nameConflict: false,
             submitted: false,
             started: false
         };
@@ -18,20 +21,23 @@ class Login extends Component {
     }
     handleChange(event) {
         this.setState({
+            nameConflict: false,
             value: event.target.value
         });
     }
     handleSubmit(event) {
         event.preventDefault();
-        if (this.state.value === "") {
-            alert("Come on, I know you have a name");
-        } else if (this.nameTaken()) {
-            alert("This name is already taken");
-        } else {
-            this.setState({
-                submitted: true
-            });
-            this.props.ready(this.state.value);
+        if (this.state.value !== "" && !this.state.nameConflict) {
+            if (this.nameTaken()) {
+                this.setState({
+                    nameConflict: true
+                });
+            } else {
+                this.setState({
+                    submitted: true
+                });
+                this.props.ready(this.state.value);
+            }
         }
     }
     handleStart() {
@@ -41,26 +47,34 @@ class Login extends Component {
         });
     }
     render() {
+        let r;
         if (!this.state.submitted) {
-            return (
+            r = (
                 <form onSubmit={this.handleSubmit}>
-                    <input type="text" placeholder="Nickname" value={this.state.value} onChange={this.handleChange} />
-                    <input type="submit" onClick={this.handleSubmit} value="Join" />
+                    {/*<input type="text" placeholder="Nickname" value={this.state.value} onChange={this.handleChange} />
+                    <input type="submit" onClick={this.handleSubmit} value="Join" />*/}
+                    <TextField errorText={this.state.nameConflict ? "This name is already taken" : ""} hintText="Nickname" value={this.state.value} onChange={this.handleChange} />
+                    <RaisedButton label="Join" primary={true} style={{ position: "absolute" }} disabled={this.state.value === "" || this.state.nameConflict} onClick={this.handleSubmit} />
                 </form>
             );
         } else if (!this.state.started) {
-            return (
-                <div>
-                    <button type="button" onClick={this.handleStart}>Start!</button>
-                </div>
+            r = (
+
+                <form onSubmit={this.handleStart}>
+                    {/*<input type="text" placeholder="Nickname" value={this.state.value} onChange={this.handleChange} />
+                    <input type="submit" onClick={this.handleSubmit} value="Join" />*/}
+                    {/*<TextField errorText={this.state.nameConflict ? "This name is already taken" : ""} hintText="Nickname" value={this.state.value} onChange={this.handleChange} />*/}
+                    <RaisedButton label="Start!" secondary={true} onClick={this.handleStart} />
+                </form>
             );
         } else {
-            return (
+            r = (
                 <div>
                     <p>Loading...</p>
                 </div>
             );
         }
+        return r;
     }
 }
 

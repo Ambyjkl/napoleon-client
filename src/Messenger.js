@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 // import "./Messenger.css";
 
-class Messenger extends Component {
+
+
+class TextBox extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -40,10 +42,46 @@ class Messenger extends Component {
         }
     }
     render() {
+        const inputStyle = {
+            boxSizing: "border-box",
+            width: "100%"
+        };
+        return (
+            <div style={this.props.style}>
+                <form onSubmit={this.handleSubmit}>
+                    <input style={inputStyle} type="text" placeholder="Type a message..." value={this.state.value} onChange={this.handleChange} />
+                </form>
+            </div>
+        );
+    }
+}
+TextBox.propTypes = {
+    name: React.PropTypes.string,
+    sendMessage: React.PropTypes.func,
+    style: React.PropTypes.object
+};
+
+const mapState = (state) => ({
+    name: state.name
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    sendMessage: (message) => {
+        dispatch({
+            type: "s/message",
+            data: message
+        });
+    }
+});
+const WrapTextBox = connect(mapState, mapDispatchToProps)(TextBox);
+
+class Messenger extends Component {
+
+    render() {
         let messagesCount = 0;
-        console.log(this.props.messages);
+        // console.log(this.props.messages);
         const odd = {
-            backgroundColor: "#AAAAAA"
+            backgroundColor: "#CCCCCC"
         };
         const even = {
             backgroundColor: "#FFFFFF"
@@ -67,13 +105,15 @@ class Messenger extends Component {
             return "00000".substring(0, 6 - c.length) + c;
         }
         const messages = (
-            <div>
+            <div style={{
+                maxHeight: "150px",
+                overflowY: "auto"
+            }}>
                 {
                     this.props.messages.map((message) => {
-                        console.log(message.timestamp);
                         const style = {
                             color: `#${intToRGB(hashCode(message.sender))}`,
-                            WebkitTextStroke: "0.4px black"
+                            WebkitTextStroke: "0.6px black"
                         };
                         return (
                             <div key={messagesCount++} style={{ ...(messagesCount % 2 ? odd : even), ...wordBreakStyle }}>
@@ -84,30 +124,27 @@ class Messenger extends Component {
                 }
             </div>
         );
-        console.log(messages);
-        const inputStyle = {
-            width: "100%",
-            boxSizing: "border-box"
-        };
-        const textBox = (
-            <form onSubmit={this.handleSubmit}>
-                <input style={inputStyle} type="text" placeholder="Type a message..." value={this.state.value} onChange={this.handleChange} />
-            </form>
-        );
         return (
-            <div style={this.props.style}>
-                <p>Messages:</p>
+            <div style={{
+                ...this.props.style,
+                maxWidth: "70%",
+                border: "1px solid #CCCCCC",
+                borderRadius: "2px"
+            }}>
                 {messages}
-                {textBox}
+                <div style={{ display: "flex" }}>
+                    <div style={{ textOverflow: "ellipsis", maxWidth: "70%", margin: "auto 5px" }}>
+                        {this.props.name}:
+                    </div>
+                    <WrapTextBox style={{ flex: "1" }} />
+                </div>
             </div>
         );
     }
 }
-
 Messenger.propTypes = {
     messages: React.PropTypes.array,
     name: React.PropTypes.string,
-    sendMessage: React.PropTypes.func,
     style: React.PropTypes.object
 };
 
@@ -116,14 +153,5 @@ const mapStateToProps = (state) => ({
     name: state.name
 });
 
-const mapDispatchToProps = (dispatch) => ({
-    sendMessage: (message) => {
-        dispatch({
-            type: "s/message",
-            data: message
-        });
-    }
-});
-
-const Wrapper = connect(mapStateToProps, mapDispatchToProps)(Messenger);
+const Wrapper = connect(mapStateToProps)(Messenger);
 export default Wrapper;
