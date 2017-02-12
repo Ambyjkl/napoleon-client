@@ -10,7 +10,7 @@ class Game extends Component {
             alignItems: "center",
             background: "#FFFFFA",
             border: "1px solid black",
-            borderRadius: "5px",
+            borderRadius: "4px",
             boxShadow: "0 1px 2px rgba(0,0,0,0.16), 0 1px 2px rgba(0,0,0,0.23)",
             display: "inline-block",
             padding: "0px 10px 5px",
@@ -134,7 +134,7 @@ class Game extends Component {
             cardsList = (
                 <div>
                     <h2>
-                        My cards:
+                        Hand:
                     </h2>
                     {
                         hand.size === 0 ?
