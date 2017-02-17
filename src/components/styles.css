@@ -1,0 +1,170 @@
+html body{
+    font-family: Roboto, sans-serif;
+}
+.card {
+    background: #FFFFFA;
+    border-radius: 4px;
+    box-shadow: 0px 0px 1px 1px rgba(0,0,0,.2);
+    width: 5em;
+    height: 7em;
+    padding: 0.4em;
+    z-index: 1;
+    /*transform:rotate(180deg);*/
+}
+.card:hover + .card {margin-top: 0;}
+.red {
+    color: #D40000;
+}
+.black {
+    color: black;
+}
+.content {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    position: relative;
+}
+.value {
+    font-family: "Roboto Condensed";
+    /*text-align: center;    */
+    font-size: 100%;
+    width: 20%;
+    position: absolute;
+    line-height: 1;
+}
+.topLeft {
+    /*width: 0.7em;*/
+    top: 0%;
+    left: -4.5%;
+}
+.bottomRight {
+    /*width: 10em;*/
+    bottom: 0%;
+    right: -4.5%;
+    transform:rotate(180deg);
+}
+.suitA {
+    display: inline-block;
+    position: absolute;
+    top: 11%;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    font-size: 500%;
+    line-height: 1;
+    margin: auto;
+}
+.face {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    display: inline-block;
+    font-size: 500%;
+    line-height: 1;
+    margin: auto;
+    background-size: cover;
+    width: 76.6%;
+    height: 88.5%;
+}
+.suit {
+    position: absolute;
+    display: inline-block;
+    width: 26.5%;
+    font-size: 200%;
+    line-height: 1;
+}
+.middleColumn {
+    left: 36.75%;
+}
+.left {
+    left: 20%;
+}
+.right {
+    right: 20%;
+}
+.faceTopLeft {
+    top: 1%;
+    left: 13%;
+}
+.faceBottomRight {
+    bottom: 7%;
+    right: 13%;
+    transform:rotate(180deg) translateY(-22%);
+}
+.rotate {
+    transform:rotate(180deg) translateY(-20%);
+}
+.top {
+    top: -6%;
+}
+.bottom {
+    bottom: 0%;
+}
+.middle {
+    top: 34.25%;
+}
+.topMiddle {
+    top: 19.66%;
+}
+.bottomMiddle {
+    top: 45.33%;
+}
+.middleTop {
+    top: 14.125%;
+}
+.middleBottom {
+    top: 49.625%;
+}
+.tenMiddleTop {
+    top: 6.83%;
+}
+.tenMiddleBottom {
+    top: 58.16%;
+}
+.overlapStyle {
+    margin-top: -75px;
+    transition: margin-top 0.3s;
+}
+.redButton {
+    background-color: #D40000 !important;
+}
+.blackButton {
+    background-color: black !important;
+}
+.cardContainer {
+    display: flex;
+    align-items: flex-start;
+    /*flex-wrap: wrap;*/
+    clear: both;
+    height: 295px;
+}
+.cardStack {
+    display: flex;
+    flex-direction: column;
+    /*justify-content: space-between;*/
+    margin: 10px 5px;
+    border-radius: 4px;
+}
+.odd {
+    background-color: #CCCCCC;
+}
+.even {
+    background-color: #FFFFFF;
+}
+.wordBreakStyle {
+    overflow-wrap: break-word;
+}
+.game {
+    /*flex: 1*/
+    /*float: left*/
+    margin: 10px;
+}
+.messenger {
+    float: right;
+    margin: 10px;
+    max-width: 70%;
+    border: 1px solid #CCCCCC;
+    border-radius: 2px;
+}

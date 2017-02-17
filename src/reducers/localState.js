@@ -33,6 +33,18 @@ const localState = (state = null, action) => {
                 }
             };
         }
+        case "DETECTED_CHEATING": {
+            return {
+                ...state,
+                cheat: true
+            };
+        }
+        case "CLEAR_CHEATING": {
+            return {
+                ...state,
+                cheat: false
+            };
+        }
         default:
             return state;
     }

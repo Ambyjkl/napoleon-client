@@ -1,11 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Messenger from "./Messenger";
+import RaisedButton from "material-ui/RaisedButton";
+import CardDesigns from "./CardDesigns";
+import "./styles.css";
 
 class Game extends Component {
     constructor(props) {
         super(props);
-        this.values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+        this.values = { "A": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 11, "Q": 12, "K": 13 };
         this.cardStyle = {
             alignItems: "center",
             background: "#FFFFFA",
@@ -18,47 +21,24 @@ class Game extends Component {
             width: "70px"
         };
         this.overlapStyle = {
-            marginTop: "-50px"
+            marginTop: "-60px"
         };
         this.suitChars = {
             "s": {
                 char: "♠",
-                style: {
-                    color: "black"
-                }
+                red: false
             },
             "h": {
                 char: "♥",
-                style: {
-                    color: "red"
-                }
+                red: true
             },
             "c": {
                 char: "♣",
-                style: {
-                    color: "black"
-                }
+                red: false
             },
             "d": {
                 char: "♦",
-                style: {
-                    color: "red"
-                }
-            }
-        };
-        this.flexStyle = {
-            container: {
-                // display: "flex"
-                // display: "inline-block"
-            },
-            leftChild: {
-                // flex: 1
-                // float: "left",
-                margin: "10px"
-            },
-            rightChild: {
-                float: "right",
-                margin: "10px"
+                red: true
             }
         };
     }
@@ -78,6 +58,11 @@ class Game extends Component {
     }
 
     render() {
+        if (this.props.status === null) return (<p>Loading</p>);
+        if (this.props.localState.cheat) {
+            alert("Be nice. Don't try to cheat!");
+            this.props.clearCheating();
+        }
         if (this.props.status.gameOver || this.props.status.lost || this.props.status.won) {
             return (
                 <div style={{ ...this.flexStyle.container, ...this.props.style }}>
@@ -115,6 +100,7 @@ class Game extends Component {
             );
         }
         const myTurn = this.props.status.currentPlayer === this.props.name;
+        const valueChoices = [];
         let cardsList;
         if (!this.props.status) {
             cardsList = null;
@@ -126,6 +112,7 @@ class Game extends Component {
                     suitArr = hand.get(value);
                 } else {
                     suitArr = [];
+                    valueChoices.push(value);
                 }
                 suitArr.push(suit);
                 hand.set(value, suitArr);
@@ -147,50 +134,20 @@ class Game extends Component {
                     {
                         hand.size === 0 ? null
                             :
-                            <div style={{ display: "flex", alignItems: "flex-start", flexWrap: "wrap", clear: "both" }}>
-
+                            <div className="cardContainer">
                                 {
                                     Array.from(hand).map(([value, suits]) => {
                                         let count = 0;
                                         let suitArr = suits.map((suit) => {
                                             const suitChar = this.suitChars[suit];
-                                            let cardStyle = { ...suitChar.style, ...this.cardStyle };
-                                            if (count !== 0) {
-                                                cardStyle = {
-                                                    ...cardStyle,
-                                                    ...this.overlapStyle
-                                                };
-                                            }
                                             count++;
-                                            let suitStyle = {
-                                                fontSize: "60px", paddingRight: "10px", paddingTop: "15px"
-                                            };
-                                            if (count !== suits.length) {
-                                                suitStyle = {
-                                                    ...suitStyle,
-                                                    marginTop: "-25px"
-                                                };
-                                            }
                                             return (
-                                                <div key={suit} style={cardStyle}>
-                                                    <div style={{ float: "left", paddingTop: "5px", fontFamily: "serif" }}>
-                                                        {value}
-                                                    </div>
-                                                    <div style={suitStyle}>
-                                                        {suitChar.char}
-                                                    </div>
-                                                    <div style={{ float: "right", fontFamily: "serif" }}>
-                                                        {value}
-                                                    </div>
-                                                </div>
+                                                <CardDesigns key={count} suit={suitChar.char} suitVal={suit} value={value} red={suitChar.red} overlapStyle={count !== 1} />
                                             );
                                         });
                                         return (
-                                            <div key={cardCount++} style={{
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                margin: "10px 5px",
-                                                border: suitArr.length === 4 ? "2px solid green" : null
+                                            <div key={cardCount++} className="cardStack" style={{
+                                                boxShadow: suitArr.length === 4 ? "0px 0px 1px 1px green" : null
                                             }}>
                                                 {suitArr}
                                             </div>
@@ -217,9 +174,12 @@ class Game extends Component {
                     <p>Choose a target</p>
                     {
                         this.props.status.players.map((player) => (
-                            <button key={player} type="button" onClick={() => {
-                                this.props.setTargetPlayer(player);
-                            }}>{player}</button>
+                            <span key={player}>
+                                {/*<button type="button" onClick={() => {
+                                    this.props.setTargetPlayer(player);
+                                }}>{player}</button>*/}
+                                <RaisedButton label={player} secondary={true} onClick={() => this.props.setTargetPlayer(player)} />
+                            </span>
                         ))
                     }
                 </div>
@@ -229,22 +189,39 @@ class Game extends Component {
                 <div>
                     <p>Choose a value</p>
                     {
-                        this.values.map((value) => (
-                            <button key={value} type="button" onClick={() => {
-                                this.props.setTargetCardValue(value);
-                                if (this.props.status.allAreGroups) {
-                                    this.props.setTargetCardSuit("all");
-                                    const r = {
-                                        name: this.props.name,
-                                        target: this.props.localState.targetPlayer,
-                                        card: {
-                                            value
+                        valueChoices.map((value) => (
+                            <span key={value}>
+                                {/*<button type="button" onClick={() => {
+                                    this.props.setTargetCardValue(value);
+                                    if (this.props.status.allAreGroups) {
+                                        this.props.setTargetCardSuit("all");
+                                        const r = {
+                                            name: this.props.name,
+                                            target: this.props.localState.targetPlayer,
+                                            card: {
+                                                value
+                                            }
+                                        };
+                                        console.log("all ar groups!: ", r);
+                                        this.props.move(r);
+                                    }
+                                }}>{value}</button>*/}
+                                <RaisedButton label={value} secondary={true}
+                                    onClick={() => {
+                                        this.props.setTargetCardValue(value);
+                                        if (this.props.status.allAreGroups) {
+                                            this.props.setTargetCardSuit("all");
+                                            const r = {
+                                                name: this.props.name,
+                                                target: this.props.localState.targetPlayer,
+                                                card: {
+                                                    value
+                                                }
+                                            };
+                                            console.log("all ar groups!: ", r);
+                                            this.props.move(r);
                                         }
-                                    };
-                                    console.log("all ar groups!: ", r);
-                                    this.props.move(r);
-                                }
-                            }}>{value}</button>
+                                    }} /></span>
                         ))
                     }
                 </div>
@@ -257,19 +234,35 @@ class Game extends Component {
                         Object.keys(this.suitChars).map((suit) => {
                             const suitChar = this.suitChars[suit];
                             return (
-                                <button key={suit + suit} style={suitChar.style} type="button" onClick={() => {
-                                    const r = {
-                                        name: this.props.name,
-                                        target: this.props.localState.targetPlayer,
-                                        card: {
-                                            value: this.props.localState.targetCard.value,
-                                            suit: suit.toString()
-                                        }
-                                    };
-                                    console.log(r);
-                                    this.props.move(r);
-                                    this.props.setTargetCardSuit(suitChar);
-                                }}>{suitChar.char}</button>
+                                <span key={suit + suit}>
+                                    {/*<button style={suitChar.style} type="button" onClick={() => {
+                                        const r = {
+                                            name: this.props.name,
+                                            target: this.props.localState.targetPlayer,
+                                            card: {
+                                                value: this.props.localState.targetCard.value,
+                                                suit: suit.toString()
+                                            }
+                                        };
+                                        console.log(r);
+                                        this.props.move(r);
+                                        this.props.setTargetCardSuit(suitChar);
+                                    }}>{suitChar.char}</button>*/}
+                                    <RaisedButton label={suitChar.char}
+                                        labelColor={suitChar.red ? "#D40000" : "black"}
+                                        onClick={() => {
+                                            const r = {
+                                                name: this.props.name,
+                                                target: this.props.localState.targetPlayer,
+                                                card: {
+                                                    value: this.props.localState.targetCard.value,
+                                                    suit: suit.toString()
+                                                }
+                                            };
+                                            console.log(r);
+                                            this.props.move(r);
+                                            this.props.setTargetCardSuit(suitChar);
+                                        }} /></span>
                             );
                         })
                     }
@@ -286,9 +279,9 @@ class Game extends Component {
         }
         let logCount = 0;
         return (
-            <div style={{ ...this.flexStyle.container, ...this.props.style }}>
-                <Messenger style={this.flexStyle.rightChild} />
-                <div style={this.flexStyle.leftChild}>
+            <div className="main" style={{ ...this.props.style }}>
+                <Messenger className="messenger" />
+                <div className="game">
                     <h2>
                         {myTurn ? "Your turn" : `${this.props.status.currentPlayer}'s turn`}
                     </h2>
@@ -316,12 +309,13 @@ class Game extends Component {
 }
 
 Game.propTypes = {
+    clearCheating: React.PropTypes.func,
     localState: React.PropTypes.object,
     move: React.PropTypes.func,
     name: React.PropTypes.string,
-    setTargetPlayer: React.PropTypes.func,
     setTargetCardSuit: React.PropTypes.func,
     setTargetCardValue: React.PropTypes.func,
+    setTargetPlayer: React.PropTypes.func,
     status: React.PropTypes.object,
     style: React.PropTypes.object
 };
@@ -364,6 +358,11 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch({
             type: "SET_TARGET_CARD_SUIT",
             data: suit
+        });
+    },
+    clearCheating: () => {
+        dispatch({
+            type: "CLEAR_CHEATING"
         });
     }
 });

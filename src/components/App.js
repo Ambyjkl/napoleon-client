@@ -18,11 +18,11 @@ class App extends Component {
         return (
             <MuiThemeProvider muiTheme={muiTheme}>
                 <div>
-                    <h1 style={{ fontFamily: "sans-serif" }}><span style={{ fontWeight: "normal" }}>♚</span> napoleon</h1>
+                    <h1><span style={{ fontWeight: "normal" }}>♚</span> napoleon</h1>
                     {
                         this.props.gameStarted
-                            ? <Game style={{ fontFamily: "sans-serif" }} />
-                            : (<div style={{ fontFamily: "sans-serif" }}>
+                            ? <Game />
+                            : (<div>
                                 <PlayerList />
                                 <Login />
                             </div>)
